@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: stock-app
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      show-sql: true
+

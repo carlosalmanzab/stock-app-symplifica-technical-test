@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-product
+      author: calmanzab
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: uuid
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: price
+                  type: NUMERIC(19,2)
+              - column:
+                  name: expiration
+                  type: TIMESTAMP
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+        - createIndex:
+            tableName: product
+            indexName: idx_products_name
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            tableName: product
+            indexName: idx_products_expiration
+            columns:
+              - column:
+                  name: expiration

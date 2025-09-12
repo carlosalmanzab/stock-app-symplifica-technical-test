@@ -1,0 +1,7 @@
+spring:
+  liquibase:
+    clear-checksums: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stock_tech_test
+    username: myuser
+    password: mypassword

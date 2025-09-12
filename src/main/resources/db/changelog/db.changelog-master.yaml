@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-create-product.yaml
+  - include:
+      file: db/changelog/002-create-stock.yaml
+  - include:
+      file: db/changelog/003-create-stock-movement.yaml
