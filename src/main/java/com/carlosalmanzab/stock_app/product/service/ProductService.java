@@ -1,5 +1,6 @@
 package com.carlosalmanzab.stock_app.product.service;
 
+import com.carlosalmanzab.stock_app.common.exception.NotFoundException;
 import com.carlosalmanzab.stock_app.inventory.service.InventoryService;
 import com.carlosalmanzab.stock_app.product.controller.ProductCreateDto;
 import com.carlosalmanzab.stock_app.product.controller.ProductUpdateDto;
@@ -29,10 +30,14 @@ public class ProductService {
   }
 
   @Transactional(readOnly = true)
-  public ProductView getByUuid(UUID uuid) {
+  private Product getProductByUuid(UUID uuid) {
     return repository
-        .findByUuid(uuid, ProductView.class)
-        .orElseThrow(() -> new RuntimeException("Product Not found"));
+        .findByUuid(uuid)
+        .orElseThrow(() -> new NotFoundException("Product not found with UUID" + uuid));
+  }
+
+  public ProductView getByUuid(UUID uuid) {
+    return mapper.toView(getProductByUuid(uuid));
   }
 
   @Transactional(readOnly = true)
@@ -41,8 +46,7 @@ public class ProductService {
   }
 
   public ProductView update(UUID uuid, ProductUpdateDto updateDto) {
-    Product ProductToUpdate =
-        repository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Product Not found"));
+    Product ProductToUpdate = getProductByUuid(uuid);
 
     mapper.UpdateFromDto(updateDto, ProductToUpdate);
 
@@ -50,8 +54,7 @@ public class ProductService {
   }
 
   public void delete(UUID uuid) {
-    Product product =
-        repository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Product Not found"));
+    Product product = getProductByUuid(uuid);
 
     repository.delete(product);
   }

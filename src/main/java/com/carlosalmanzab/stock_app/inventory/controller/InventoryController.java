@@ -1,9 +1,10 @@
 package com.carlosalmanzab.stock_app.inventory.controller;
 
 import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementView;
-import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementWithProductUuidView;
+import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementWithStockUuidView;
 import com.carlosalmanzab.stock_app.inventory.repository.projection.StockView;
 import com.carlosalmanzab.stock_app.inventory.service.InventoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -17,11 +18,12 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/products")
+@Tag(name = "Inventory", description = "Endpoints for managing stocks and movements of products")
 public class InventoryController {
   private final InventoryService inventoryService;
 
   @GetMapping("/movements")
-  public ResponseEntity<Page<StockMovementWithProductUuidView>> getStockMovements(
+  public ResponseEntity<Page<StockMovementWithStockUuidView>> getStockMovements(
       @ParameterObject Pageable pageable) {
     return ResponseEntity.ok(inventoryService.getMovements(pageable));
   }

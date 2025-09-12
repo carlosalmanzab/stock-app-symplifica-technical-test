@@ -1,16 +1,14 @@
 package com.carlosalmanzab.stock_app.inventory.model;
 
-import com.carlosalmanzab.stock_app.product.model.Product;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -44,8 +42,8 @@ public class StockMovement {
   private LocalDateTime updatedAt;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "product_id", nullable = false)
-  private Product product;
+  @JoinColumn(name = "stock_id", nullable = false)
+  private Stock stock;
 
   @PrePersist
   public void prePersist() {

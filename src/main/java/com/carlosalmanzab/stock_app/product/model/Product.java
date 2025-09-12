@@ -14,8 +14,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -62,15 +60,8 @@ public class Product {
 
   private Boolean active;
 
-  @OneToOne(
-      mappedBy = "product",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY,
-      optional = false)
-  private Stock stock;
-
-  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-  private final List<StockMovement> movements = new ArrayList<>();
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private Stock stock;
 
     @PrePersist
     public void prePersist() {

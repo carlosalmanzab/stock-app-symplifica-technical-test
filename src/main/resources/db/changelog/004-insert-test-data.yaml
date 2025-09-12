@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-test-data
+      author: carlos
+      context: dev
+      changes:
+        - sqlFile:
+            path: sql/004-test-data.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+

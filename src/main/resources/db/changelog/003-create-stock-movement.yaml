@@ -12,40 +12,48 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
+
               - column:
                   name: uuid
                   type: UUID
                   constraints:
                     nullable: false
                     unique: true
+
               - column:
                   name: quantity
                   type: INT
+                  constraints:
+                    nullable: false
+
               - column:
                   name: movement_type
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
+
               - column:
                   name: created_at
                   type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
               - column:
                   name: updated_at
                   type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
               - column:
-                  name: product_id
+                  name: stock_id
                   type: BIGINT
                   constraints:
                     nullable: false
 
         - addForeignKeyConstraint:
             baseTableName: stock_movement
-            baseColumnNames: product_id
-
-            referencedTableName: product
+            baseColumnNames: stock_id
+            referencedTableName: stock
             referencedColumnNames: id
-
-            constraintName: fk_stock_movement_product
+            constraintName: fk_stock_movement_stock
 
         - createIndex:
             tableName: stock_movement

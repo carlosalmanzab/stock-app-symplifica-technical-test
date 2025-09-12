@@ -3,6 +3,9 @@ package com.carlosalmanzab.stock_app.product.controller;
 import com.carlosalmanzab.stock_app.product.repository.projection.ProductView;
 import com.carlosalmanzab.stock_app.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -37,6 +40,18 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Create a product", description = "Adds a new product to the system")
+    @ApiResponse(
+            responseCode = "201",
+            description = "Product created",
+            content = @Content(mediaType = "application/json"),
+            headers = {
+                    @Header(
+                            name = "Location",
+                            description = "URI of the newly created product",
+                            schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", format = "uri")
+                    )
+            }
+    )
     public ResponseEntity<ProductView> save(@Valid @RequestBody ProductCreateDto createDto) {
         ProductView productView = service.create(createDto);
         URI uri = URI.create("/api/v1/products/" + productView.uuid());

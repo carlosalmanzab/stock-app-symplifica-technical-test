@@ -1,5 +1,7 @@
 package com.carlosalmanzab.stock_app.inventory.service;
 
+import com.carlosalmanzab.stock_app.common.exception.NotFoundException;
+import com.carlosalmanzab.stock_app.common.exception.ValidationException;
 import com.carlosalmanzab.stock_app.inventory.controller.StockMovementCreateDto;
 import com.carlosalmanzab.stock_app.inventory.model.MovementType;
 import com.carlosalmanzab.stock_app.inventory.model.Stock;
@@ -9,7 +11,7 @@ import com.carlosalmanzab.stock_app.inventory.repository.StockMovementMapper;
 import com.carlosalmanzab.stock_app.inventory.repository.StockMovementRepository;
 import com.carlosalmanzab.stock_app.inventory.repository.StockRepository;
 import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementView;
-import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementWithProductUuidView;
+import com.carlosalmanzab.stock_app.inventory.repository.projection.StockMovementWithStockUuidView;
 import com.carlosalmanzab.stock_app.inventory.repository.projection.StockView;
 import com.carlosalmanzab.stock_app.product.model.Product;
 import lombok.AllArgsConstructor;
@@ -32,7 +34,7 @@ public class InventoryService {
   private Stock getStockByProductUuid(UUID prodUuid) {
     return stockRepository
         .findByProductUuid(prodUuid, Stock.class)
-        .orElseThrow(() -> new RuntimeException("Stock not found for product " + prodUuid));
+        .orElseThrow(() -> new NotFoundException("Stock not found for product " + prodUuid));
   }
 
   public StockView getStockViewByProductUuid(UUID prodUuid) {
@@ -41,66 +43,49 @@ public class InventoryService {
 
   public StockMovementView movementTypeHandler(StockMovementCreateDto movementCreateDto) {
     return switch (movementCreateDto.type()) {
-      case IN -> increaseStock(movementCreateDto.productUuid(), movementCreateDto.quantity());
-      case OUT -> decreaseStock(movementCreateDto.productUuid(), movementCreateDto.quantity());
+      case IN -> updateStock(movementCreateDto.productUuid(), movementCreateDto.quantity(),MovementType.IN);
+      case OUT -> updateStock(movementCreateDto.productUuid(), movementCreateDto.quantity(),MovementType.OUT);
     };
   }
 
-  private StockMovementView decreaseStock(UUID prodUuid, int decreaseQuantity) {
-    Stock stock = getStockByProductUuid(prodUuid);
+    private StockMovementView updateStock(UUID prodUuid, int quantity, MovementType type) {
+        Stock stock = getStockByProductUuid(prodUuid);
 
-    int totalStock = stock.getCurrentStock() - decreaseQuantity;
-    if (decreaseQuantity <= 0) {
-      throw new IllegalArgumentException("La cantidad a disminuir debe ser mayor a 0");
+        int newStock = type == MovementType.IN
+                ? stock.getCurrentStock() + quantity
+                : stock.getCurrentStock() - quantity;
+
+        if (newStock < 0) {
+            throw new ValidationException("There es insufficient stock. Current stock "
+                    + stock.getCurrentStock()
+                    + ", Request: "
+                    + quantity);
+        }
+
+        stock.setCurrentStock(newStock);
+        Stock savedStock = stockRepository.save(stock);
+
+        StockMovement movement = StockMovement.builder()
+                .stock(savedStock)
+                .quantity(quantity)
+                .type(type)
+                .build();
+
+        return movementMapper.toView(movementRepository.save(movement));
     }
-    if (stock.getCurrentStock() < decreaseQuantity || totalStock < 0) {
-      throw new IllegalStateException(
-          "No hay stock suficiente. Stock actual: "
-              + stock.getCurrentStock()
-              + ", solicitado: "
-              + decreaseQuantity);
-    }
-    stock.setCurrentStock(totalStock);
-    Stock savedStock = stockRepository.save(stock);
-
-    StockMovement stockMovement =
-        movementRepository.save(
-            StockMovement.builder()
-                .product(savedStock.getProduct())
-                .type(MovementType.OUT)
-                .build());
-
-    return movementMapper.toView(stockMovement);
-  }
-
-  private StockMovementView increaseStock(UUID prodUuid, int increaseQuantity) {
-    Stock stock = getStockByProductUuid(prodUuid);
-
-    if (increaseQuantity <= 0) {
-      throw new IllegalArgumentException("La cantidad a aumentar debe ser mayor a 0");
-    }
-
-    stock.setCurrentStock(stock.getCurrentStock() + increaseQuantity);
-
-    Stock savedStock = stockRepository.save(stock);
-
-    StockMovement savedMovement =
-        movementRepository.save(
-            StockMovement.builder().product(savedStock.getProduct()).type(MovementType.IN).build());
-    return movementMapper.toView(savedMovement);
-  }
 
   public void initStock(Product product) {
     stockRepository.save(Stock.builder().product(product).currentStock(0).build());
   }
 
   @Transactional(readOnly = true)
-  public Page<StockMovementWithProductUuidView> getMovements(Pageable pageable) {
-    return movementRepository.findAllStockMovementWithProductUuid(pageable);
+  public Page<StockMovementWithStockUuidView> getMovements(Pageable pageable) {
+    return movementRepository.findAllStockMovementWithStockUuid(pageable);
   }
 
   @Transactional(readOnly = true)
   public Page<StockMovementView> getMovementsByProductUuid(Pageable pageable, UUID prodUuid) {
-    return movementRepository.findByProductUuid(prodUuid, pageable, StockMovementView.class);
+      Stock stock = getStockByProductUuid(prodUuid);
+    return movementRepository.findByStock_Uuid(stock.getUuid(), pageable, StockMovementView.class);
   }
 }

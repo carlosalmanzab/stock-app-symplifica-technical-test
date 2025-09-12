@@ -7,6 +7,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -40,10 +42,13 @@ public class Stock {
   @JoinColumn(name = "product_id", nullable = false, unique = true)
   private Product product;
 
-    @PrePersist
-    public void prePersist() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
+  @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+  private final List<StockMovement> movements = new ArrayList<>();
+
+  @PrePersist
+  public void prePersist() {
+    if (uuid == null) {
+      uuid = UUID.randomUUID();
     }
+  }
 }

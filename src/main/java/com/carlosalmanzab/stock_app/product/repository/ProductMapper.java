@@ -26,7 +26,6 @@ public interface ProductMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "stock", ignore = true)
-    @Mapping(target = "movements", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void UpdateFromDto(ProductUpdateDto dto, @MappingTarget Product product);
 }
