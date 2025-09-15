@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-pg-trgm-extension
+      author: carlos
+      context: dev
+      changes:
+        - sql:
+            sql: |
+              CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+  - changeSet:
+      id: 006-product-name-trgm-index
+      author: carlos
+      context: dev
+      changes:
+        - sql:
+            sql: |
+              CREATE INDEX IF NOT EXISTS idx_product_name_trigram
+              ON product
+              USING gin (name gin_trgm_ops);

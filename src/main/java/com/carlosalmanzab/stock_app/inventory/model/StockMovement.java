@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 @Builder
@@ -18,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Table(
     name = "stock_movement",
     indexes = {@Index(name = "stock_movement_type_index", columnList = "movement_type")})
+@EntityListeners(AuditingEntityListener.class)
 public class StockMovement {
 
   @Id

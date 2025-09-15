@@ -10,4 +10,16 @@ databaseChangeLog:
             splitStatements: true
             stripComments: true
 
-
+  - changeSet:
+      id: fix-sequences
+      author: carlos
+      context: dev
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: |
+              SELECT setval(pg_get_serial_sequence('product','id'), (SELECT COALESCE(MAX(id),1) FROM product));
+              SELECT setval(pg_get_serial_sequence('stock','id'), (SELECT COALESCE(MAX(id),1) FROM stock));
+              SELECT setval(pg_get_serial_sequence('stock_movement','id'), (SELECT COALESCE(MAX(id),1) FROM stock_movement));

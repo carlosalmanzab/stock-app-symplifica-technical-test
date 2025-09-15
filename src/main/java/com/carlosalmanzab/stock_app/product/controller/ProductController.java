@@ -26,51 +26,54 @@ import java.util.UUID;
 public class ProductController {
   private final ProductService service;
 
-    @GetMapping("/{uuid}")
-    @Operation(summary = "Get product by UUID", description = "Retrieve a product by its unique UUID")
-    public ResponseEntity<ProductView> getByUuid(@PathVariable UUID uuid) {
-        return ResponseEntity.ok(service.getByUuid(uuid));
-    }
+  @GetMapping("/{uuid}")
+  @Operation(summary = "Get product by UUID", description = "Retrieve a product by its unique UUID")
+  public ResponseEntity<ProductView> getByUuid(@PathVariable UUID uuid) {
+    return ResponseEntity.ok(service.getByUuid(uuid));
+  }
 
-    @GetMapping
-    @Operation(summary = "Get all products", description = "Returns a paginated list of products")
-    public ResponseEntity<Page<ProductView>> getAll(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(service.getAll(pageable));
-    }
+  @GetMapping
+  @Operation(summary = "Get all products", description = "Returns a paginated list of products")
+  public ResponseEntity<Page<ProductView>> getAll(
+      @ParameterObject Pageable pageable, @RequestParam(required = false) String name) {
 
-    @PostMapping
-    @Operation(summary = "Create a product", description = "Adds a new product to the system")
-    @ApiResponse(
-            responseCode = "201",
-            description = "Product created",
-            content = @Content(mediaType = "application/json"),
-            headers = {
-                    @Header(
-                            name = "Location",
-                            description = "URI of the newly created product",
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", format = "uri")
-                    )
-            }
-    )
-    public ResponseEntity<ProductView> save(@Valid @RequestBody ProductCreateDto createDto) {
-        ProductView productView = service.create(createDto);
-        URI uri = URI.create("/api/v1/products/" + productView.uuid());
-        return ResponseEntity.created(uri).body(productView);
-    }
+    Page<ProductView> productViewPage =
+        name == null || name.isEmpty()
+            ? service.getAll(pageable)
+            : service.getAllByNameSimilar(name, pageable);
 
-    @PutMapping("/{uuid}")
-    @Operation(summary = "Update a product", description = "Updates an existing product by UUID")
-    public ResponseEntity<ProductView> update(
-            @PathVariable UUID uuid,
-            @Valid @RequestBody ProductUpdateDto dto) {
-        return ResponseEntity.ok(service.update(uuid, dto));
-    }
+    return ResponseEntity.ok(productViewPage);
+  }
 
-    @DeleteMapping("/{uuid}")
-    @Operation(summary = "Delete a product", description = "Deletes a product by UUID")
-    public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
-        service.delete(uuid);
-        return ResponseEntity.noContent().build();
-    }
+  @PostMapping
+  @Operation(summary = "Create a product", description = "Adds a new product to the system")
+  @ApiResponse(
+      responseCode = "201",
+      description = "Product created",
+      content = @Content(mediaType = "application/json"),
+      headers = {
+        @Header(
+            name = "Location",
+            description = "URI of the newly created product",
+            schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", format = "uri"))
+      })
+  public ResponseEntity<ProductView> save(@Valid @RequestBody ProductCreateDto createDto) {
+    ProductView productView = service.create(createDto);
+    URI uri = URI.create("/api/v1/products/" + productView.uuid());
+    return ResponseEntity.created(uri).body(productView);
+  }
 
+  @PutMapping("/{uuid}")
+  @Operation(summary = "Update a product", description = "Updates an existing product by UUID")
+  public ResponseEntity<ProductView> update(
+      @PathVariable UUID uuid, @Valid @RequestBody ProductUpdateDto dto) {
+    return ResponseEntity.ok(service.update(uuid, dto));
+  }
+
+  @DeleteMapping("/{uuid}")
+  @Operation(summary = "Delete a product", description = "Deletes a product by UUID")
+  public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
+    service.delete(uuid);
+    return ResponseEntity.noContent().build();
+  }
 }

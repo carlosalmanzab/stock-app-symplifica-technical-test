@@ -1,3 +1,6 @@
+cors:
+  allowed-origins: "http://localhost:5173"
+
 spring:
   liquibase:
     clear-checksums: true
@@ -5,3 +8,23 @@ spring:
     url: jdbc:postgresql://localhost:5432/stock_tech_test
     username: myuser
     password: mypassword
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        type:
+          descriptor:
+            sql:
+              basic: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/003-create-stock-movement.yaml
   - include:
       file: db/changelog/004-insert-test-data.yaml
+  - include:
+      file: db/changelog/005-add-pg-trgm-extension.yaml

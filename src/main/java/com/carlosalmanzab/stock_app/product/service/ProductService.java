@@ -45,6 +45,11 @@ public class ProductService {
     return repository.findAllBy(pageable, ProductView.class);
   }
 
+  @Transactional(readOnly = true)
+  public Page<ProductView> getAllByNameSimilar(String name, Pageable pageable) {
+      return repository.findByNameSimilar(name, 0.06, pageable).map(mapper::toView);
+  }
+
   public ProductView update(UUID uuid, ProductUpdateDto updateDto) {
     Product ProductToUpdate = getProductByUuid(uuid);
 
@@ -55,7 +60,8 @@ public class ProductService {
 
   public void delete(UUID uuid) {
     Product product = getProductByUuid(uuid);
-
     repository.delete(product);
   }
+
+
 }
