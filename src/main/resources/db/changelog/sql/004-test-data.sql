@@ -1,4 +1,4 @@
-INSERT INTO product (id, uuid, name, description, price, created_at, updated_at, expiration, active)
+INSERT INTO product (id, uuid, name, description, price, expiration, active)
 VALUES
 (1, '11111111-1111-1111-1111-111111111111', 'Gaming Laptop', 'Laptop gaming de alto rendimiento', 4500000,   '2026-12-31T00:00:00', true),
 (2, '22222222-2222-2222-2222-222222222222', 'Smartphone Pro', 'Celular de última generación', 3500000,   '2026-12-31T00:00:00', true),
@@ -22,7 +22,7 @@ VALUES
 (20, '16161616-1616-1616-1616-161616161616', 'Case ATX', 'Gabinete con RGB', 400000,   '2026-12-31T00:00:00', true);
 
 
-INSERT INTO stock (id, uuid, current_stock, created_at, updated_at, product_id)
+INSERT INTO stock (id, uuid, current_stock, product_id)
 VALUES
 (1, 'aaaabbbb-0001-0000-0000-000000000001', 50,   1),
 (2, 'aaaabbbb-0002-0000-0000-000000000002', 30,   2),
@@ -45,7 +45,7 @@ VALUES
 (19, 'aaaabbbb-0019-0000-0000-000000000019', 65,   19),
 (20, 'aaaabbbb-0020-0000-0000-000000000020', 90,   20);
 
-INSERT INTO stock_movement (id, uuid, quantity, movement_type, created_at, updated_at, stock_id)
+INSERT INTO stock_movement (id, uuid, quantity, movement_type, stock_id)
 VALUES
 (1, 'aaaacccc-0001-0000-0000-000000000001', 10, 'IN',   1),
 (2, 'aaaacccc-0002-0000-0000-000000000002', 5, 'OUT',   1),
@@ -89,7 +89,7 @@ VALUES
 (39, 'aaaacccc-0039-0000-0000-000000000039', 16, 'IN',   2),
 (40, 'aaaacccc-0040-0000-0000-000000000040', 8, 'OUT',   2);
 
-INSERT INTO stock_movement (id, uuid, quantity, movement_type, created_at, updated_at, stock_id)
+INSERT INTO stock_movement (id, uuid, quantity, movement_type, stock_id)
 VALUES
 (41, 'aaaacccc-0041-0000-0000-000000000041', 15, 'IN',   3),
 (42, 'aaaacccc-0042-0000-0000-000000000042', 10, 'IN',   4),
