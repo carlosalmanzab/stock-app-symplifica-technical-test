@@ -1,4 +1,4 @@
-FROM gradle:8.7-jdk21 AS build
+FROM gradle:8.7-jdk21-alpine AS build
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY . .
 
 RUN gradle clean bootJar -x test --no-daemon
 
-FROM eclipse-temurin:21-jre AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 WORKDIR /app
 
